@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="20G730" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="ChapterCD" representedClassName="ChapterCD" syncable="YES">
+        <attribute name="chapterID" attributeType="String"/>
+        <attribute name="chapterName" attributeType="String"/>
+        <relationship name="manga" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Manga" inverseName="chapters" inverseEntity="Manga"/>
+        <relationship name="pages" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="PageCD" inverseName="chapter" inverseEntity="PageCD"/>
+    </entity>
+    <entity name="Favorite" representedClassName="Favorite" syncable="YES" codeGenerationType="class">
+        <attribute name="title" attributeType="String"/>
+    </entity>
+    <entity name="Manga" representedClassName="Manga" syncable="YES">
+        <attribute name="author" attributeType="String"/>
+        <attribute name="chaptersCount" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="cover" attributeType="String"/>
+        <attribute name="descript" attributeType="String"/>
+        <attribute name="directory" attributeType="String"/>
+        <attribute name="genras" attributeType="String"/>
+        <attribute name="isFinished" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="isTranslated" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="releaseYear" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="status" attributeType="String"/>
+        <attribute name="title" attributeType="String"/>
+        <attribute name="translation" attributeType="String"/>
+        <attribute name="volumesCount" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="chapters" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ChapterCD" inverseName="manga" inverseEntity="ChapterCD"/>
+    </entity>
+    <entity name="PageCD" representedClassName="PageCD" syncable="YES">
+        <attribute name="orderIndex" attributeType="String"/>
+        <attribute name="url" attributeType="String"/>
+        <relationship name="chapter" optional="YES" maxCount="1" deletionRule="Nullify" ordered="YES" destinationEntity="ChapterCD" inverseName="pages" inverseEntity="ChapterCD"/>
+    </entity>
+    <elements>
+        <element name="ChapterCD" positionX="-27.701171875" positionY="-120.3952484130859" width="128" height="89"/>
+        <element name="Favorite" positionX="-63" positionY="0" width="128" height="44"/>
+        <element name="Manga" positionX="-275.2417602539062" positionY="-87.36807250976562" width="128" height="239"/>
+        <element name="PageCD" positionX="202.4373779296875" positionY="49.22006225585938" width="128" height="74"/>
+    </elements>
+</model>
