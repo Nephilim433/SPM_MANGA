@@ -1,10 +1,3 @@
-//
-//  GridHeaderCollectionReusableView.swift
-//  MangaReader
-//
-//  Created by Nephilim  on 1/13/23.
-//
-
 import UIKit
 
 class GridHeaderCollectionReusableView: UICollectionReusableView {
@@ -21,7 +14,6 @@ class GridHeaderCollectionReusableView: UICollectionReusableView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-//        backgroundColor = .secondarySystemBackground
         backgroundColor = ColorHex.hexStringToUIColor(hex: HexColor.pinkishColor.rawValue).withAlphaComponent(0.5)
         addSubview(chapterNameLabel)
     }

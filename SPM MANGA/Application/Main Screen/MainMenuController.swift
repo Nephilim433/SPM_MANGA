@@ -1,9 +1,3 @@
-//
-//  MainMenuController.swift
-//  SPM MANGA
-//
-//  Created by Nephilim  on 1/19/23.
-//
 
 import UIKit
 import FirebaseStorage
@@ -14,57 +8,51 @@ import FirebaseDatabase
 
 
 class MainMenuController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
-
-
-
-
-//    private lazy var menuBarButton = UIBarButtonItem(image: UIImage(systemName: "sidebar.leading"), style: .done, target: self, action: #selector(didTapMenuBarButton))
+    
     private lazy var menuBarButton = UIBarButtonItem(image: UIImage(systemName: "line.3.horizontal"), style: .done, target: self, action: #selector(didTapMenuBarButton))
-
+    
     private let searchController : UISearchController = {
         let controller = UISearchController()
         return controller
     }()
     
-
+    
     private var sideMenu: SideMenuNavigationController?
-
+    
     private lazy var settingsController = SettingsViewController()
     private lazy var infoController = InfoViewController()
-
-
+    
+    
     private let storage = Storage.storage()
     private var ref = Database.database().reference()
     private var models: [MangaDetailModel]?
-
+    
     init(collectionViewLayout layout: UICollectionViewLayout, models: [MangaDetailModel]) {
         if models.count != 0 {
-        self.models = models
+            self.models = models
         }
         super.init(collectionViewLayout: layout)
         fetchData()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSideMenu()
         navigationItem.setLeftBarButton(menuBarButton, animated: false)
         navigationController?.navigationBar.tintColor = .label
-//        navigationController?.navigationBar.tintColor = ColorHex.hexStringToUIColor(hex: HexColor.pinkishColor.rawValue)
         collectionView.backgroundColor = .systemBackground
-
+        
         navigationItem.searchController = searchController
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
-
+        
         collectionView.register(MainMenuCell.self, forCellWithReuseIdentifier: MainMenuCell.identifier)
-//        fetchData()
         addChildControllers()
-
+        
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
         refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh and randomize...")
@@ -73,34 +61,34 @@ class MainMenuController: UICollectionViewController, UICollectionViewDelegateFl
         collectionView.alwaysBounceVertical = true
         navigationItem.title = "Головна сторінка"
     }
-
+    
     @objc func refresh(for control: UIRefreshControl) {
         fetchData()
         collectionView.reloadData()
         control.endRefreshing()
     }
-
+    
     private func addChildControllers() {
-
+        
         addChild(infoController)
         view.addSubview(infoController.view)
         infoController.view.frame = view.bounds
-
+        
         infoController.didMove(toParent: self)
-
+        
         infoController.view.isHidden = true
-
+        
     }
     private func fetchData() {
         DatabaseCaller.shared.getMangaDetails { models in
-
+            
             let shuffled = models.shuffled()
             self.models = shuffled
-
+            
             self.collectionView.reloadData()
         }
     }
-
+    
     private func setupSideMenu() {
         let menu = SideMenuController(with: SideMenuItem.allCases)
         menu.delegate = self
@@ -113,22 +101,22 @@ class MainMenuController: UICollectionViewController, UICollectionViewDelegateFl
         //MARK: - show side menu
         guard let sideMenu = sideMenu else { return }
         present(sideMenu, animated: true, completion: nil)
-
+        
     }
-
+    
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MainMenuCell.identifier, for: indexPath) as? MainMenuCell else { return UICollectionViewCell() }
-
+        
         guard let model = models?[indexPath.item] else { return UICollectionViewCell() }
-
+        
         cell.configure(with: model)
-
-
+        
+        
         return cell
     }
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return models?.count ?? 0
-
+        
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let height = view.height / 4
@@ -141,24 +129,21 @@ class MainMenuController: UICollectionViewController, UICollectionViewDelegateFl
         guard let model = models?[indexPath.row] else { return }
         
         DatabaseCaller.shared.getChapters(for: model) { manga in
-//            print(manga)
-
+            
             let vc = ChaptersListController(model: manga)
-//            let vc = Chapters2ViewController(model: manga)
             self.navigationController?.pushViewController(vc, animated: true)
-
-            }
+            
         }
-
-
-
+    }
+    
+    
+    
 }
 
 extension MainMenuController: SideMenuControllerDelegate {
     func didSelectMenu(item: SideMenuItem) {
         sideMenu?.dismiss(animated: true, completion: nil)
         //change controller
-//        self.title = item.rawValue
         switch item {
         case .home:
             settingsController.view.isHidden = true
@@ -176,7 +161,6 @@ extension MainMenuController: SideMenuControllerDelegate {
             navigationController?.pushViewController(vc, animated: true)
         case .downloads:
             let vc = DownloadsViewController()
-//            present(vc,animated: true)
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -187,20 +171,18 @@ extension MainMenuController : UISearchBarDelegate, UISearchResultsUpdating {
         //MARK: - TODO Change it search without button
         print("UpdateSearchResults")
     }
-
+    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-
+        
         guard let query = searchBar.text, !query.trimmingCharacters(in: .whitespaces).isEmpty else { return }
         print("query = \(query)")
         DatabaseCaller.shared.queryMangas(with: query) { mangaModels in
             self.models = mangaModels
-            print("mangaModels = \(mangaModels)")
             self.collectionView.reloadData()
             self.searchController.isActive = false
-            print("fetched manga model!")
-//            print("mangaModel = \(mangaModels)")
+            
         }
-
-
+        
+        
     }
 }

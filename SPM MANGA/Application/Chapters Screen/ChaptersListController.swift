@@ -1,13 +1,5 @@
-//
-//  ChaptersListController.swift
-//  MangaReader
-//
-//  Created by Nephilim  on 9/16/22.
-//
-
 import Foundation
 import UIKit
-//import FirebaseUI
 import FirebaseStorageUI
 import FirebaseStorage
 
@@ -20,15 +12,12 @@ extension Notification.Name {
     }
 }
 
-
-
 class ChaptersListController: UITableViewController {
     
     var model: MangaDetailModel?
     var cdmodel: Manga?
     var chapters : [Chapter]!
-//    var cdchapters : [ChapterCD]?
-
+    
     var isExpanded = false {
         didSet {
             UIView.animate(withDuration: 0.3) {
@@ -36,41 +25,31 @@ class ChaptersListController: UITableViewController {
                 self.changeHeaderHeight()
                 self.tableView.endUpdates()
             }
-
+            
         }
     }
-
+    
     var headerHeight: CGFloat {
         let text = cdmodel?.descript != nil ? cdmodel?.descript : model?.description
         let textsize = DynamicLableSize.heightForZeroLines(text: text, font: .systemFont(ofSize: 14), width: view.width-20)
-
+        
         //MARK: - Change here if you move descript label
-//        let sizeOfSmalltext:CGFloat = 120
         let sizeOfSmalltext:CGFloat = 53
-
         let expandedSize = 300+(textsize-sizeOfSmalltext)
         guard expandedSize > 300 else { return 300 }
         return isExpanded ? expandedSize : 300
     }
-
+    
     init(model: MangaDetailModel) {
         self.model = model
         if let chapters = model.chapters {
             self.chapters = chapters.sorted { $0.chapterName.compare($1.chapterName , options: .numeric) == .orderedDescending }
         }
-
-        //MARK: - нахуя я оце роблю?
-//        if let modelFromCD = DataManager.shared.fetchManga(with: model.title) {
-//            //            print("modelFromCD = \(modelFromCD)")
-//            print("this goes brrr")
-//            cdchapters = DataManager.shared.getSortedChapters(for: modelFromCD)
-//        }
         super.init(nibName: nil, bundle: nil)
-
     }
     init(model: Manga) {
         self.cdmodel = model
-
+        
         let cdchapters = model.chapters?.array as! [ChapterCD]
         let chapters: [Chapter] = cdchapters.compactMap({ chapterCD in
             let pages = chapterCD.pages?.array as! [PageCD]
@@ -79,99 +58,87 @@ class ChaptersListController: UITableViewController {
             return Chapter(chapterName: chapterCD.chapterName!, chapterID: chapterCD.chapterID!, pages: mangaPages)
         })
         self.chapters = chapters.sorted { $0.chapterName.compare($1.chapterName , options: .numeric) == .orderedDescending }
-
-
+        
+        
         chapters.forEach { ch in
             print(ch.chapterName)
         }
-
+        
         super.init(nibName: nil, bundle: nil)
-
+        
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-
-
+    
+    
+    
     private let notificationCenter = NotificationCenter.default
     override func viewDidLoad() {
         super.viewDidLoad()
-
-//        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         tableView.register(ChaptersHeaderView.self, forHeaderFooterViewReuseIdentifier: ChaptersHeaderView.identifier)
         tableView.register(ChaptersListTableViewCell.self, forCellReuseIdentifier: ChaptersListTableViewCell.indentifier)
-
+        
         tableView.isScrollEnabled = true
         setupHeader()
-
+        
         view.addSubview(spinner)
         notificationCenter.addObserver(self, selector: #selector(downloadedNotify), name: .downloadSuccess, object: nil)
         notificationCenter.addObserver(self, selector: #selector(downloadedAlready), name: .downloadedAlready, object: nil)
     }
-
     deinit {
         print("ChaptersListController deinit!")
         notificationCenter.removeObserver(self, name: .downloadedAlready, object: nil)
         notificationCenter.removeObserver(self, name: .downloadSuccess, object: nil)
     }
-
+    
     lazy var spinner: UIActivityIndicatorView = {
         let w = UIScreen.main.bounds.width
         let h = UIScreen.main.bounds.height
-
+        
         let spinner = UIActivityIndicatorView(frame: CGRect(x: w/2, y: h/2, width: 50, height: 50))
         spinner.center = CGPoint(x: w/2, y: h/2)
         spinner.hidesWhenStopped = true
         spinner.isHidden = true
         return spinner
     }()
-
-
+    
+    
     @objc private func downloadedAlready() {
         spinner.stopAnimating()
         let alert = UIAlertController(title: "Whoops!", message: "Здається, ви вже маєте копію усіх розділів цієї манги на своєму телефоні", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true)
     }
-
-
+    
+    
     @objc private func downloadedNotify() {
-
+        
         let visibleRect = CGRect(origin: self.tableView.contentOffset, size: self.tableView.bounds.size)
-
-
         let tempView = UIView(frame: visibleRect)
         let imageView = UIImageView(image: UIImage(systemName: "checkmark.square"))
         tempView.addSubview(imageView)
         imageView.frame = CGRect(x: tempView.width/2-50, y: tempView.height/2-50, width: 100, height: 100)
-//        print("view.center.x = \(view.center.x)")
-//        print("imageView.center.x = \(imageView.center.x)")
         imageView.contentMode = .scaleAspectFit
         imageView.tintColor = ColorHex.hexStringToUIColor(hex: HexColor.pinkishColor.rawValue)
-
         tableView.addSubview(tempView)
-
-
-
         tempView.alpha = 1.0
         tempView.isHidden = false
         spinner.stopAnimating()
-
-
-         UIView.animate(withDuration: 1.0) {
-             tempView.alpha = 0.0
-         } completion: { done in
-             if done {
-
-                 self.tableView.reloadData()
-                 tempView.isHidden = true
-             }
-         }
+        
+        UIView.animate(withDuration: 1.0) {
+            tempView.alpha = 0.0
+        } completion: { done in
+            if done {
+                
+                self.tableView.reloadData()
+                tempView.isHidden = true
+            }
+        }
         print("Finished downloading!")
-     }
-
+    }
+    
     private func changeHeaderHeight() {
         header?.frame = CGRect(x: 0, y: 0, width: view.width, height: headerHeight)
     }
@@ -179,7 +146,7 @@ class ChaptersListController: UITableViewController {
     private func setupHeader() {
         header = ChaptersHeaderView(frame: CGRect(x: 0, y: 0, width: view.width, height: headerHeight))
         tableView.tableHeaderView = header
-
+        
         if let cdmodel = cdmodel {
             let model = MangaDetailModel(title: cdmodel.title!, coverURL: cdmodel.cover!, chaptersCount: Int(cdmodel.chaptersCount), volumesCount: Int(cdmodel.volumesCount), genras: cdmodel.genras!, description: cdmodel.descript!, directory: cdmodel.directory!, chapters: nil, author: cdmodel.author!, status: cdmodel.status!, translation: cdmodel.translation!, release: Int(cdmodel.releaseYear), isTranslated: cdmodel.isTranslated, isFinished: cdmodel.isFinished)
             header?.configure(with: model)
@@ -191,7 +158,6 @@ class ChaptersListController: UITableViewController {
         }
         header?.delegate = self
     }
-
 }
 
 //MARK: - Tableview datasource and delegate methods
@@ -199,129 +165,60 @@ extension ChaptersListController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-//        guard cdmodel != nil else {
-//
-//            let index = model!.chapters!.count-indexPath.row-1
-//            print("index = \(index)")
-////            let vc = GridViewController(model:self.model!, index: index)
-//            let vc = GridViewController(chapters: chapters, title: model!.title, index: index)
-//            print("init with chapters")
-//
-//            navigationController?.pushViewController(vc, animated: true)
-//            print("the indexPath.item  = \(indexPath.item)")
-//            return
-//        }
-        print("I want to open GridViewController")
-        
-//        let index = cdmodel!.chapters!.count - indexPath.row-1
         let index = chapters.count - indexPath.row-1
-
-//        print("cdmodel!.chapters!.count - indexPath.row+1 = \(cdmodel!.chapters!.count - indexPath.row+1)")
         let title = (cdmodel?.title != nil ? cdmodel?.title : model?.title)!
-//        let vc = GridViewController(model: self.cdmodel!, index: index)
         let vc = GridViewController(chapters: chapters, title: title, index: index)
-        print("init with chapters")
-        //        self.present(vc,animated: true)
         navigationController?.pushViewController(vc, animated: true)
-
-
+        
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        guard cdmodel != nil else {
-//            return (model?.chapters!.count)!
-//        }
-//        return cdmodel?.chapters?.count ?? 0
         return chapters?.count ?? 0
     }
-
-
+    
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 10
     }
-
+    
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ChaptersListTableViewCell.indentifier, for: indexPath) as? ChaptersListTableViewCell else { return UITableViewCell() }
-
         cell.isDownloading = false
-//        let activiy = UIActivityIndicatorView(style: .medium)
-//        cell.accessoryView = activiy
-//        activiy.startAnimating()
-
         if let chapter = chapters?[indexPath.row] {
-                cell.textLabel?.text = chapter.chapterName.replacingOccurrences(of: "_", with: " ")
-                cell.tintColor = ColorHex.hexStringToUIColor(hex: HexColor.pinkishColor.rawValue)
-//                if DataManager.shared.existsChapter(with: chapter.chapterID) {
-//                    cell.accessoryView = nil
-//                    cell.accessoryType = .checkmark
-//                }
-                cell.accessoryType = DataManager.shared.existsChapter(with: chapter.chapterID) ? .checkmark : .none
-
-            }
+            cell.textLabel?.text = chapter.chapterName.replacingOccurrences(of: "_", with: " ")
+            cell.tintColor = ColorHex.hexStringToUIColor(hex: HexColor.pinkishColor.rawValue)
+            cell.accessoryType = DataManager.shared.existsChapter(with: chapter.chapterID) ? .checkmark : .none
+        }
         cell.isDownloading = false
-            return cell
-//        }
-//        guard cdmodel != nil,let chapterName = cdchapters?[indexPath.row].chapterName else {
-//            if let chapter = chapters?[indexPath.row] {
-//                cell.textLabel?.text = chapter.chapterName.replacingOccurrences(of: "_", with: " ")
-//                cell.tintColor = ColorHex.hexStringToUIColor(hex: HexColor.pinkishColor.rawValue)
-////                if DataManager.shared.existsChapter(with: chapter.chapterID) {
-////                    cell.accessoryView = nil
-////                    cell.accessoryType = .checkmark
-////                }
-//                cell.accessoryType = DataManager.shared.existsChapter(with: chapter.chapterID) ? .checkmark : .none
-//
-//            }
-//            return cell
-//        }
-
-//        cell.textLabel?.text = chapterName.replacingOccurrences(of: "_", with: " ")
-//        cell.accessoryType = .checkmark
-//        cell.isDownloading = false
-//        return cell
+        return cell
     }
-
+    
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-
-//        let index = model!.chapters!.count-indexPath.row-1
-//        print("index in swipe gesture = \(index)")
-//        print("model?.chapters?.count = \(model?.chapters?.count)")
         guard let chapterToDownload = self.chapters?[indexPath.row], let model = self.model else {
             print("can't save...")
             return nil
         }
-        print(chapterToDownload.chapterName)
-
         let swipeAction = UIContextualAction(style: .normal, title: "") { action, sourceView, complition in
-
             var chaptersToSave = [Chapter]()
             chaptersToSave.append(chapterToDownload)
-
             print("save tapped")
             complition(true)
             DataManager.shared.saveChapter(for: model, with: chaptersToSave)
-
             guard let cell = tableView.cellForRow(at: indexPath) as? ChaptersListTableViewCell else { return }
             cell.isDownloading = true
-
         }
-
-
-
         let config = UIImage.SymbolConfiguration(pointSize: 16)
         let image = UIImage(systemName: "arrow.down", withConfiguration: config)
         swipeAction.image = image
-
+        
         let swiperConfig = DataManager.shared.existsChapter(with: chapterToDownload.chapterID) ? UISwipeActionsConfiguration() : UISwipeActionsConfiguration(actions: [swipeAction])
         let anotherSwipeConfig = UISwipeActionsConfiguration()
-
+        
         swiperConfig.performsFirstActionWithFullSwipe = true
-
+        
         return cdmodel == nil ? swiperConfig : anotherSwipeConfig
     }
-
+    
 }
 
 
@@ -341,44 +238,26 @@ extension ChaptersListController: ChaptersHeaderViewDelegate {
         alert.addAction(UIAlertAction(title: "Скасувати", style: .default, handler: nil))
         present(alert, animated: true)
     }
-
+    
     func readThisManga() {
-        //TODO:Change it so it starts at first downloaded image? or it check if very first
-//        guard model != nil else {
-//
-//
-//            let vc = GridViewController(model:self.cdmodel!)
-//
-//            //        self.present(vc,animated: true)
-//            navigationController?.pushViewController(vc, animated: true)
-//            return
-//        }
-        print("I want to read this manga from the very first page")
-//        let vc = GridViewController(model:self.model!)
-//        let vc = GridViewController(model:self.model!)
         let title = (cdmodel?.title != nil ? cdmodel?.title : model?.title)!
         let vc = GridViewController(chapters: chapters, title: title)
-
-        //        self.present(vc,animated: true)
         navigationController?.pushViewController(vc, animated: true)
     }
-
+    
     func favoriteThisManga() {
         guard let title = model?.directory else { return }
         DataManager.shared.favoriteManga(with: title)
     }
-
+    
     func unfavoriteThisManga() {
         guard let title = model?.directory else { return }
         DataManager.shared.unfavoriteManga(with: title)
     }
-
+    
     func didTapToggleHeaderViewHeight() {
         print("didTapToggleHeaderViewHeight executed")
         self.isExpanded.toggle()
         print("isExpanded = \(isExpanded)")
-
     }
-
-
 }

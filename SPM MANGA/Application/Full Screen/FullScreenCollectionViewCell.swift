@@ -16,7 +16,6 @@ class FullScreenCollectionViewCell: UICollectionViewCell {
         return view
     }()
 
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .secondarySystemBackground
@@ -29,22 +28,18 @@ class FullScreenCollectionViewCell: UICollectionViewCell {
     }
 
     @objc func didTap() {
-        print("didTap executed")
         delegate?.didTapFullScreenCell()
     }
-
 
     private func setupImageScrollView() {
         imageScrollView.frame = CGRect(x: 0, y: 0, width: contentView.width, height: contentView.height)
     }
-
 
     public func configure(url: String) {
         if SDImageCache.shared.diskImageDataExists(withKey: url) {
             let image = SDImageCache.shared.imageFromCache(forKey: url)!
             imageScrollView.display(image: image)
         } else {
-        print("url = \(url)")
             DataManager.shared.downloadImage(url) { [weak self] imagee in
                 self?.imageScrollView.display(image: imagee)
             }

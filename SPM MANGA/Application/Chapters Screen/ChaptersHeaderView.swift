@@ -1,10 +1,3 @@
-//
-//  ChaptersHeader2 .swift
-//  SPM MANGA
-//
-//  Created by Nephilim  on 2/1/23.
-//
-
 import UIKit
 import FirebaseStorageUI
 import FirebaseStorage
@@ -25,30 +18,7 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
 
 
     weak var delegate: ChaptersHeaderViewDelegate?
-    var isFavorite = false {
-        didSet {
-            //favoriteButton
-            //            let expandTransform:CGAffineTransform = CGAffineTransform(scaleX: 1.15, y: 1.15);
-            //            UIView.transition(with: self.favoriteButton,
-            //                    duration:0.1,
-            //                              options: UIView.AnimationOptions.transitionCrossDissolve,
-            //                    animations: {
-            //                self.favoriteButton.transform = expandTransform
-            //                    },
-            //                    completion: {(finished: Bool) in
-            //                UIView.animate(withDuration: 0.4,
-            //                        delay:0.0,
-            //                        usingSpringWithDamping:0.40,
-            //                        initialSpringVelocity:0.2,
-            //                        options:UIView.AnimationOptions.curveEaseOut,
-            //                        animations: {
-            //                    self.favoriteButton.transform = expandTransform.inverted()
-            //                        }, completion:nil)
-            //                  })
-
-        }
-    }
-
+    var isFavorite = false
     let titleLabel : UILabel = {
         let label = UILabel()
         label.font = .boldSystemFont(ofSize: 18)
@@ -58,10 +28,8 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
         return label
     }()
 
-
     let volumesLabel: UILabel = {
         let text = UILabel()
-        //        text.backgroundColor = .red
         text.numberOfLines = 0
         text.font = UIFont.systemFont(ofSize: 14)
         text.isUserInteractionEnabled = true
@@ -70,7 +38,6 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
 
     let chaptersLabel: UILabel = {
         let text = UILabel()
-        //        text.backgroundColor = .red
         text.numberOfLines = 1
         text.font = UIFont.systemFont(ofSize: 14)
         text.isUserInteractionEnabled = true
@@ -79,7 +46,6 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
 
     let authorLabel: UILabel = {
         let text = UILabel()
-        //        text.backgroundColor = .red
         text.lineBreakMode = .byTruncatingTail
         text.numberOfLines = 1
         text.font = UIFont.systemFont(ofSize: 14)
@@ -88,7 +54,6 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
 
     let translationLabel: UILabel = {
         let text = UILabel()
-        //        text.backgroundColor = .red
         text.lineBreakMode = .byTruncatingTail
         text.numberOfLines = 0
         text.font = UIFont.systemFont(ofSize: 14)
@@ -96,21 +61,18 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
     }()
     let genrasLabel: UILabel = {
         let text = UILabel()
-        //        text.backgroundColor = .red
         text.numberOfLines = 2
         text.font = UIFont.systemFont(ofSize: 14)
         return text
     }()
     let releaseYear: UILabel = {
         let text = UILabel()
-        //        text.backgroundColor = .red
         text.numberOfLines = 1
         text.font = UIFont.systemFont(ofSize: 14)
         return text
     }()
     let descriptionLabel: UILabel = {
         let text = UILabel()
-        //        text.backgroundColor = .red
         text.numberOfLines = 0
         text.font = UIFont.systemFont(ofSize: 14)
         text.isUserInteractionEnabled = true
@@ -119,32 +81,23 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
 
     var thumbnailImageView : UIImageView = {
         let imageView = UIImageView()
-        //        imageView.backgroundColor = .systemOrange
         imageView.contentMode = .scaleAspectFit
-        //imageView.image = UIImage(named: "cover1")
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
 
     let favoriteButton: UIButton = {
         let button = UIButton()
-        //        button.tintColor = .label
         button.tintColor = ColorHex.hexStringToUIColor(hex: HexColor.pinkishColor.rawValue)
         button.addTarget(self, action: #selector(toggleFavoriteButton), for: .touchUpInside)
-        //        button.backgroundColor = .green
         return button
     }()
     let downloadAllButton: UIButton = {
         let button = UIButton()
         button.tintColor = .label
-        //        button.tintColor = ColorHex.hexStringToUIColor(hex: HexColor.pinkishColor.rawValue)
         let config = UIImage.SymbolConfiguration(pointSize: 27)
-        //        let config = UIImage.SymbolConfiguration(pointSize: 27, weight: .regular, scale: .large)
         button.setImage(UIImage(systemName: "arrow.down.square", withConfiguration: config), for: .normal)
         let imagee = UIImage(systemName: "arrow.down.square")
-
-        //        button.setImage(UIImage(systemName: "arrow.down.square"), for: .normal)
-        //        button.backgroundColor = .red
         button.imageView?.contentMode = .scaleAspectFit
         button.addTarget(self, action: #selector(downloadButtonPressed), for: .touchUpInside)
         return button
@@ -152,21 +105,15 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
     let startToReadButton: UIButton = {
         let button = UIButton()
         button.tintColor = .label
-        //        button.tintColor = ColorHex.hexStringToUIColor(hex: HexColor.pinkishColor.rawValue)
         let config = UIImage.SymbolConfiguration(pointSize: 27)
-        //        let config = UIImage.SymbolConfiguration(pointSize: 27, weight: .regular, scale: .large)
         button.setImage(UIImage(systemName: "eye", withConfiguration: config), for: .normal)
-        //        button.setImage(UIImage(systemName: "eye"), for: .normal)
         button.addTarget(self, action: #selector(startToReadButtonPressed), for: .touchUpInside)
-
         return button
     }()
 
     var favoriteImage : UIImage {
-        //        let config = UIImage.SymbolConfiguration(pointSize: 27)
         let config = UIImage.SymbolConfiguration(pointSize: 30)
         let image = UIImage(systemName: "heart" + (isFavorite ? ".fill" : ""), withConfiguration: config)!
-        //        let image = UIImage(systemName: "heart" + (isFavorite ? ".fill" : ""))!
         return image
     }
 
@@ -199,7 +146,6 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
 
         let tap = UITapGestureRecognizer(target: self, action: #selector(toggleHeaderViewHeight))
         tap.numberOfTapsRequired = 1
-
         descriptionLabel.addGestureRecognizer(tap)
 
         setupConstraints()
@@ -208,39 +154,13 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
 
     @objc func toggleFavoriteButton() {
         favoriteButton.pressAnimation()
-        print("descriptionLabel.height = \(descriptionLabel.height)")
-        //iphone13 (53.0)
-        print("toggleFavoriteButton being pressed")
         if isFavorite {
             delegate?.unfavoriteThisManga()
         } else {
             delegate?.favoriteThisManga()
         }
         isFavorite = !isFavorite
-        print(favoriteButton.frame.size)
-        //        let expandTransform:CGAffineTransform = CGAffineTransform(scaleX: 1.15, y: 1.15);
-        //        UIView.transition(with: self.favoriteButton,
-        //                duration:0.1,
-        //                          options: UIView.AnimationOptions.transitionCrossDissolve,
-        //                animations: {
-        //            self.favoriteButton.transform = expandTransform
-        //                },
-        //                completion: {(finished: Bool) in
-        //            UIView.animate(withDuration: 0.4,
-        //                    delay:0.0,
-        //                    usingSpringWithDamping:0.40,
-        //                    initialSpringVelocity:0.2,
-        //                    options:UIView.AnimationOptions.curveEaseOut,
-        //                    animations: {
-        //                self.favoriteButton.transform = .identity
-        //
-        ////                self.favoriteButton.transform = expandTransform.inverted()
-        //                    }, completion:nil)
-        //              })
-
-        print(downloadAllButton.frame.size)
         favoriteButton.setImage(favoriteImage, for: .normal)
-
     }
 
     @objc func toggleHeaderViewHeight() {
@@ -251,14 +171,12 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
     @objc func downloadButtonPressed() {
         downloadAllButton.pressAnimation()
         delegate?.downloadThisManga()
-
     }
 
 
     @objc func startToReadButtonPressed() {
         startToReadButton.pressAnimation()
         delegate?.readThisManga()
-
     }
 
 
@@ -401,7 +319,6 @@ extension UIButton {
                            options:UIView.AnimationOptions.curveEaseOut,
                            animations: {
                 self.transform = .identity
-                //                self.favoriteButton.transform = expandTransform.inverted()
             }, completion:nil)
         })
     }

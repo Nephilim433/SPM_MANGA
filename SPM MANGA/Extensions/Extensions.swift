@@ -1,10 +1,3 @@
-//
-//  Extensions.swift
-//  SPM MANGA
-//
-//  Created by Nephilim  on 1/19/23.
-//
-
 import UIKit
 
 extension UIView {
@@ -64,7 +57,6 @@ class DynamicLableSize {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: CGFloat.greatestFiniteMagnitude))
         label.text = text
         label.numberOfLines = 0
-//        label.font = .systemFont(ofSize: 14)
         label.font = font
         label.sizeToFit()
         label.lineBreakMode = .byTruncatingTail

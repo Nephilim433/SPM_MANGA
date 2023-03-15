@@ -1,10 +1,3 @@
-//
-//  Models.swift
-//  SPM MANGA
-//
-//  Created by Nephilim  on 1/19/23.
-//
-
 import Foundation
 import UIKit
 
@@ -14,8 +7,6 @@ struct MainMenuModel {
     let chaptersCount: Int
     let genras: [String]
 }
-
-
 
 struct MangaDetailModel {
     let title: String

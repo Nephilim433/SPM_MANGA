@@ -1,12 +1,4 @@
-//
-//  GridCollectionViewCell.swift
-//  MangaReader
-//
-//  Created by Nephilim  on 1/12/23.
-//
-
 import UIKit
-//import FirebaseUI
 import FirebaseStorage
 import FirebaseStorageUI
 
@@ -31,7 +23,6 @@ class GridCollectionViewCell: UICollectionViewCell {
 
     override func prepareForReuse() {
         imageView.sd_imageIndicator = SDWebImageActivityIndicator.gray
-//        imageView.image = nil
     }
 
     required init?(coder: NSCoder) {
@@ -42,7 +33,6 @@ class GridCollectionViewCell: UICollectionViewCell {
 
         imageView.contentMode = .scaleAspectFit
         contentView.clipsToBounds = true
-
         posLabel.frame = CGRect(x: frame.width/2-8, y: frame.height-10, width: frame.width, height: 10)
         imageView.frame = CGRect(x: 0, y: 2, width: contentView.width, height: contentView.height-14)
     }
@@ -61,21 +51,12 @@ class GridCollectionViewCell: UICollectionViewCell {
                 self.imageView.image = imagee
             }
         }
-
-
-//
-//        let reference = Storage.storage().reference(forURL: url)
-//        imageView.sd_imageIndicator = SDWebImageActivityIndicator.gray
-//        imageView.sd_setImage(with: reference)
     }
+
     public func configure(key: String, pos:Int, max:Int) {
         posLabel.text = "\(pos)/\(max)"
         SDImageCache.shared.queryImage(forKey: key, options: .continueInBackground, context: nil, cacheType: .disk) { image, data, cacheType  in
-//            print("key =",key)
-//            print("cacheType =",cacheType)
-//            print("data =",data)
             self.imageView.image = image
-
         }
     }
 }

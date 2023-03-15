@@ -1,10 +1,3 @@
-//
-//  ChaptersListTableViewCell.swift
-//  SPM MANGA
-//
-//  Created by Nephilim  on 1/29/23.
-//
-
 import UIKit
 import SnapKit
 
@@ -27,7 +20,6 @@ class ChaptersListTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addSubview(spinner)
-//        setupViews()
     }
 
     required init?(coder: NSCoder) {
@@ -36,8 +28,6 @@ class ChaptersListTableViewCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
 
     override func layoutSubviews() {
@@ -46,18 +36,9 @@ class ChaptersListTableViewCell: UITableViewCell {
         spinner.frame = CGRect(x: contentView.width-contentView.height, y: 0, width: contentView.height, height: contentView.height)
     }
     private func setupViews() {
-
-//        addSubview(spinner2)
         let width = self.width-44
         spinner.snp.makeConstraints { make in
-
             make.centerX.equalTo(width)
-//            make.center.equalTo(contentView.snp.center)
         }
-//        spinner2.snp.makeConstraints { make in
-//            make.center.equalTo(contentView.snp.center)
-//        }
-
     }
-
 }
