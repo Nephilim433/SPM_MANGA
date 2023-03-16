@@ -7,17 +7,17 @@ import SDWebImage
 
 class DatabaseCaller {
     let storage = Storage.storage()
-    var ref = Database.database().reference()
+    var reference = Database.database().reference()
 
-    static var persistentContainer = NSPersistentContainer(name:"Mangas")
-    private var managedObjectContext : NSManagedObjectContext?
+    static var persistentContainer = NSPersistentContainer(name: "Mangas")
+    private var managedObjectContext: NSManagedObjectContext?
 
     static let shared = DatabaseCaller()
     private init() {}
 
-    //MARK: - FireBaseCalls
-    public func getRootDirectories(complition: @escaping ([String])-> Void) {
-        self.ref.observeSingleEvent(of: .value) { snapshot in
+    // MARK: - FireBaseCalls
+    public func getRootDirectories(complition: @escaping ([String]) -> Void) {
+        self.reference.observeSingleEvent(of: .value) { snapshot in
             let enumerator = snapshot.children
             var folders = [String]()
             while let rest = enumerator.nextObject() as? DataSnapshot {
@@ -33,61 +33,76 @@ class DatabaseCaller {
 
         }
     }
-    public func getMangaNamesByRelease(complition: @escaping ([String])-> Void) {
-
-        ref.queryOrdered(byChild: "lastUpdated").queryLimited(toLast: 5).observe(DataEventType.value) { snapshot in
-            let enumerator = snapshot.children
-            while let rest = enumerator.nextObject() as? DataSnapshot {
-                let mangaFolder = rest.key
+    public func getMangaNamesByRelease(complition: @escaping ([String]) -> Void) {
+        reference
+            .queryOrdered(byChild: "lastUpdated")
+            .queryLimited(toLast: 5)
+            .observe(DataEventType.value) { snapshot in
+                let enumerator = snapshot.children
+                while let rest = enumerator.nextObject() as? DataSnapshot {
+                    let mangaFolder = rest.key
+                }
             }
-        }
     }
 
     public func getFavorites(for mangas: [String], complition: @escaping ([MangaDetailModel]) -> Void) {
 
         var models = [MangaDetailModel]()
         for manga in mangas {
-            self.ref.child(manga).child("chapters").observeSingleEvent(of: .value) { snapshot in
-                let chaptersCount = snapshot.childrenCount
+            self.reference
+                .child(manga)
+                .child("chapters")
+                .observeSingleEvent(of: .value) { snapshot in
+                    let chaptersCount = snapshot.childrenCount
 
-                self.ref.child(manga).observeSingleEvent(of: .value) { snapshot in
+                    self.reference.child(manga).observeSingleEvent(of: .value) { snapshot in
 
-                    let value = snapshot.value as? Dictionary<String, Any>
-                    guard let title = value?["title"] as? String,
-                          let cover = value?["cover"] as? String,
-                          let description = value?["description"] as? String,
-                          let genras = value?["genras"] as? String,
-                          let author = value?["author"] as? String,
-                          let release = value?["release"] as? Int,
-                          let status = value?["status"] as? String,
-                          let translation = value?["translation"] as? String,
-                          let volumes = value?["volumes"] as? Int,
-                          let isFinished = value?["isFinished"] as? Bool,
-                          let isTranslated = value?["isTranslated"] as? Bool
-                    else { return }
+                        let value = snapshot.value as? [String: Any]
+                        guard let title = value?["title"] as? String,
+                              let cover = value?["cover"] as? String,
+                              let description = value?["description"] as? String,
+                              let genras = value?["genras"] as? String,
+                              let author = value?["author"] as? String,
+                              let release = value?["release"] as? Int,
+                              let status = value?["status"] as? String,
+                              let translation = value?["translation"] as? String,
+                              let volumes = value?["volumes"] as? Int,
+                              let isFinished = value?["isFinished"] as? Bool,
+                              let isTranslated = value?["isTranslated"] as? Bool
+                        else { return }
 
-                    models.append(MangaDetailModel(title: title, coverURL: cover, chaptersCount: Int(chaptersCount), volumesCount: volumes, genras: genras, description: description, directory: manga, chapters: nil, author: author, status: status, translation: translation, release: release,isTranslated: isTranslated, isFinished:isFinished))
-
-                    if models.count == mangas.count {
-
-                        complition(models)
+                        models.append(MangaDetailModel(title: title,
+                                                       coverURL: cover,
+                                                       chaptersCount: Int(chaptersCount),
+                                                       volumesCount: volumes,
+                                                       genras: genras,
+                                                       description: description,
+                                                       directory: manga,
+                                                       chapters: nil,
+                                                       author: author,
+                                                       status: status,
+                                                       translation: translation,
+                                                       release: release,
+                                                       isTranslated: isTranslated,
+                                                       isFinished: isFinished))
+                        if models.count == mangas.count {
+                            complition(models)
+                        }
                     }
                 }
-            }
         }
     }
-
 
     public func getMangaDetails(complition: @escaping ([MangaDetailModel]) -> Void) {
         var models = [MangaDetailModel]()
         getRootDirectories { directories in
             for directory in directories {
-                self.ref.child(directory).child("chapters").observeSingleEvent(of: .value) { snapshot in
+                self.reference.child(directory).child("chapters").observeSingleEvent(of: .value) { snapshot in
                     let chaptersCount = snapshot.childrenCount
 
-                    self.ref.child(directory).observeSingleEvent(of: .value) { snapshot in
+                    self.reference.child(directory).observeSingleEvent(of: .value) { snapshot in
 
-                        let value = snapshot.value as? Dictionary<String, Any>
+                        let value = snapshot.value as? [String: Any]
 
                         guard let title = value?["title"] as? String,
                               let cover = value?["cover"] as? String,
@@ -101,7 +116,21 @@ class DatabaseCaller {
                               let isFinished = value?["isFinished"] as? Bool,
                               let isTranslated = value?["isTranslated"] as? Bool
                         else { return }
-                        models.append(MangaDetailModel(title: title, coverURL: cover, chaptersCount: Int(chaptersCount), volumesCount: volumes, genras: genras, description: description, directory: directory, chapters: nil, author: author, status: status, translation: translation, release: release,isTranslated: isTranslated, isFinished:isFinished))
+                        models.append(
+                            MangaDetailModel(title: title,
+                                             coverURL: cover,
+                                             chaptersCount: Int(chaptersCount),
+                                             volumesCount: volumes,
+                                             genras: genras,
+                                             description: description,
+                                             directory: directory,
+                                             chapters: nil,
+                                             author: author,
+                                             status: status,
+                                             translation: translation,
+                                             release: release,
+                                             isTranslated: isTranslated,
+                                             isFinished: isFinished))
 
                         if models.count == directories.count {
 
@@ -124,12 +153,12 @@ class DatabaseCaller {
                 }
             }
             filteredDirs.forEach {  dir in
-                self.ref.child(dir).child("chapters").observeSingleEvent(of: .value) { snapshot in
+                self.reference.child(dir).child("chapters").observeSingleEvent(of: .value) { snapshot in
                     let chaptersCount = snapshot.childrenCount
 
-                    self.ref.child(dir).observeSingleEvent(of: .value) { snapshot in
+                    self.reference.child(dir).observeSingleEvent(of: .value) { snapshot in
 
-                        let value = snapshot.value as? Dictionary<String, Any>
+                        let value = snapshot.value as? [String: Any]
                         guard let title = value?["title"] as? String,
                               let cover = value?["cover"] as? String,
                               let description = value?["description"] as? String,
@@ -143,8 +172,20 @@ class DatabaseCaller {
                               let isTranslated = value?["isTranslated"] as? Bool
                         else { return }
 
-                        models.append(MangaDetailModel(title: title, coverURL: cover, chaptersCount: Int(chaptersCount), volumesCount: volumes, genras: genras, description: description, directory: dir, chapters: nil, author: author, status: status, translation: translation, release: release,isTranslated: isTranslated, isFinished:isFinished))
-
+                        models.append(MangaDetailModel(title: title,
+                                                       coverURL: cover,
+                                                       chaptersCount: Int(chaptersCount),
+                                                       volumesCount: volumes,
+                                                       genras: genras,
+                                                       description: description,
+                                                       directory: dir,
+                                                       chapters: nil,
+                                                       author: author,
+                                                       status: status,
+                                                       translation: translation,
+                                                       release: release,
+                                                       isTranslated: isTranslated,
+                                                       isFinished: isFinished))
                         if models.count == filteredDirs.count {
                             complition(models)
                         }
@@ -156,10 +197,10 @@ class DatabaseCaller {
 
     public func getChapters(for mangaModel: MangaDetailModel, complition: @escaping (MangaDetailModel) -> Void) {
         var chapters = [Chapter]()
-        self.ref.child(mangaModel.directory).child("chapters").observeSingleEvent(of: .value) { snapshot in
+        self.reference.child(mangaModel.directory).child("chapters").observeSingleEvent(of: .value) { snapshot in
             for chapter in snapshot.children {
                 guard let chapterChild = chapter as? DataSnapshot else { return }
-                let value = chapterChild.value as? [String:Any]
+                let value = chapterChild.value as? [String: Any]
                 print(chapterChild.key)
                 let id = value?["uuid"] as? String ?? "none"
 
@@ -168,9 +209,9 @@ class DatabaseCaller {
                 for child2 in chapterChild.children {
                     guard let child = child2 as? DataSnapshot else { return }
 
-                    let value = child.value as? [String:Any]
+                    let value = child.value as? [String: Any]
 
-                    guard let url = value?["url"] as? String,let childKey = Int(child.key) else { continue }
+                    guard let url = value?["url"] as? String, let childKey = Int(child.key) else { continue }
 
                     let page = MangaPage(orderIndex: childKey, url: url)
                     pages.append(page)
@@ -180,25 +221,40 @@ class DatabaseCaller {
                 chapters.append(chapterModel)
 
             }
-            let model = MangaDetailModel(title: mangaModel.title, coverURL: mangaModel.coverURL, chaptersCount: mangaModel.chaptersCount, volumesCount: mangaModel.volumesCount, genras: mangaModel.genras, description: mangaModel.description, directory: mangaModel.directory, chapters: chapters, author: mangaModel.author,status: mangaModel.status,translation: mangaModel.translation ,release:mangaModel.release, isTranslated: mangaModel.isTranslated, isFinished: mangaModel.isFinished)
-
+            let model = MangaDetailModel(title: mangaModel.title,
+                                         coverURL: mangaModel.coverURL,
+                                         chaptersCount: mangaModel.chaptersCount,
+                                         volumesCount: mangaModel.volumesCount,
+                                         genras: mangaModel.genras,
+                                         description: mangaModel.description,
+                                         directory: mangaModel.directory,
+                                         chapters: chapters,
+                                         author: mangaModel.author,
+                                         status: mangaModel.status,
+                                         translation: mangaModel.translation,
+                                         release: mangaModel.release,
+                                         isTranslated: mangaModel.isTranslated,
+                                         isFinished: mangaModel.isFinished)
             complition(model)
         }
     }
 
-    //MARK: - trying to change for fetching with Core Data Model
+    // MARK: - trying to change for fetching with Core Data Model
     public func getChaptersWithLocalModel(for mangaModel: Manga, complition: @escaping (MangaDetailModel) -> Void) {
         var chapters = [Chapter]()
-        guard let name = mangaModel.title, let cover = mangaModel.cover, let author = mangaModel.author,let genras = mangaModel.genras,let status = mangaModel.status, let translation = mangaModel.translation,let description = mangaModel.descript else { return }
+        guard let name = mangaModel.title, let cover = mangaModel.cover,
+              let author = mangaModel.author, let genras = mangaModel.genras,
+              let status = mangaModel.status, let translation = mangaModel.translation,
+              let description = mangaModel.descript else { return }
         let isFinished = mangaModel.isFinished
         let isTranslated = mangaModel.isTranslated
         let volumesCount = Int(mangaModel.volumesCount)
         let chaptersCount = Int(mangaModel.chaptersCount)
         let release = Int(mangaModel.releaseYear)
-        self.ref.child(name).child("chapters").observeSingleEvent(of: .value) { snapshot in
+        self.reference.child(name).child("chapters").observeSingleEvent(of: .value) { snapshot in
             for chapter in snapshot.children {
                 guard let chapterChild = chapter as? DataSnapshot else { return }
-                let value = chapterChild.value as? [String:Any]
+                let value = chapterChild.value as? [String: Any]
 
                 let id = value?["uuid"] as? String ?? "none"
 
@@ -207,9 +263,9 @@ class DatabaseCaller {
                 for child2 in chapterChild.children {
                     guard let child = child2 as? DataSnapshot else { return }
 
-                    let value = child.value as? [String:Any]
+                    let value = child.value as? [String: Any]
 
-                    //temporaly
+                    // temporaly
                     let childKey = Int(child.key) ?? 0
                     let url = value?["url"] as? String ?? "none"
                     let page = MangaPage(orderIndex: childKey, url: url)
@@ -219,15 +275,20 @@ class DatabaseCaller {
                 chapters.append(chapterModel)
 
             }
-            let model = MangaDetailModel(title: name, coverURL: cover, chaptersCount: chaptersCount, volumesCount: volumesCount, genras: genras, description: description, directory: name, chapters: chapters, author: author, status: status, translation: translation, release: release, isTranslated: isTranslated, isFinished: isFinished)
+            let model = MangaDetailModel(
+                title: name, coverURL: cover, chaptersCount: chaptersCount,
+                volumesCount: volumesCount, genras: genras, description: description,
+                directory: name, chapters: chapters, author: author, status: status,
+                translation: translation, release: release, isTranslated: isTranslated,
+                isFinished: isFinished)
 
             complition(model)
         }
     }
 
-    //MARK: - Saving locally / CoreData / SDWebImage
-    private func saveImgLocal(url : String, complition: @escaping (String)->Void) {
-        SDWebImageDownloader.shared.downloadImage(with: URL(string: url)) { image, data, error, isFinished in
+    // MARK: - Saving locally / CoreData / SDWebImage
+    private func saveImgLocal(url: String, complition: @escaping (String) -> Void) {
+        SDWebImageDownloader.shared.downloadImage(with: URL(string: url)) { image, _, _, isFinished in
             if isFinished {
                 print(url)
                 SDImageCache.shared.store(image, forKey: url, toDisk: true) {
@@ -237,12 +298,12 @@ class DatabaseCaller {
             }
         }
     }
-    public func saveToCoreData(with model: MangaDetailModel ,complition: @escaping (Bool) -> Void) {
+    public func saveToCoreData(with model: MangaDetailModel, complition: @escaping (Bool) -> Void) {
         self.managedObjectContext = DatabaseCaller.persistentContainer.viewContext
         guard let context = managedObjectContext else {
             return
         }
-        
+
         let manga = Manga(context: context)
         saveImgLocal(url: model.coverURL) { manga.cover = $0 }
         manga.descript = model.description

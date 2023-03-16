@@ -7,7 +7,7 @@ import SnapKit
 class MainMenuCell: UICollectionViewCell {
     static let identifier = "MainMenuCell"
 
-    let thumbnailImageView : UIImageView = {
+    let thumbnailImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.backgroundColor = .clear
         imageView.contentMode = .scaleAspectFill
@@ -20,7 +20,7 @@ class MainMenuCell: UICollectionViewCell {
         return imageView
     }()
 
-    let titleLabel : UILabel = {
+    let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "no data?"
         label.font = .boldSystemFont(ofSize: 18)
@@ -29,7 +29,7 @@ class MainMenuCell: UICollectionViewCell {
 
         return label
     }()
-    let chaptersCountLabel : UILabel = {
+    let chaptersCountLabel: UILabel = {
         let label = UILabel()
         label.text = "no data?"
         label.font = UIFont.systemFont(ofSize: 14)
@@ -66,7 +66,6 @@ class MainMenuCell: UICollectionViewCell {
         view.clipsToBounds = true
         return view
     }()
-
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -118,12 +117,9 @@ class MainMenuCell: UICollectionViewCell {
     public func configure(with model: MangaDetailModel) {
         let reference = Storage.storage().reference(forURL: model.coverURL)
         thumbnailImageView.sd_setImage(with: reference)
-
         titleLabel.text = model.title
-
         let released = model.isFinished ? "випуск закінченний" : "випуск триває"
         let translated = model.isTranslated ? "переклад закінченний" : "переклад триває"
-        
         statusLabel.text = "\(released)\n\(translated)"
         chaptersCountLabel.text = "Розділів: \(String(model.chaptersCount))"
         genrasLabel.text = model.genras
@@ -133,4 +129,3 @@ class MainMenuCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 }
-

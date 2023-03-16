@@ -126,14 +126,14 @@
 			path = Downloads;
 			sourceTree = "<group>";
 		};
-		C6629DAE2987FE1D00F68C06 /* Chapters Screen */ = {
+		C6629DAE2987FE1D00F68C06 /* Chapters_Screen */ = {
 			isa = PBXGroup;
 			children = (
 				C6658DDD29797ECC000E75BA /* ChaptersListController.swift */,
 				C6629D862986981800F68C06 /* ChaptersListTableViewCell.swift */,
 				C6D28E4D298AE60C00A80180 /* ChaptersHeaderView.swift */,
 			);
-			path = "Chapters Screen";
+			path = Chapters_Screen;
 			sourceTree = "<group>";
 		};
 		C664D123299CE49000CFE545 /* Models */ = {
@@ -204,33 +204,33 @@
 			path = Storyboards;
 			sourceTree = "<group>";
 		};
-		C6658DF0297986BC000E75BA /* Grid screen */ = {
+		C6658DF0297986BC000E75BA /* Grid_Screen */ = {
 			isa = PBXGroup;
 			children = (
 				C6658DE129797F5E000E75BA /* GridCollectionViewCell.swift */,
 				C6658DE029797F5E000E75BA /* GridHeaderCollectionReusableView.swift */,
 				C6658DDF29797F5D000E75BA /* GridViewController.swift */,
 			);
-			path = "Grid screen";
+			path = Grid_Screen;
 			sourceTree = "<group>";
 		};
-		C6658DF1297986D9000E75BA /* Full Screen */ = {
+		C6658DF1297986D9000E75BA /* Full_Screen */ = {
 			isa = PBXGroup;
 			children = (
 				C6658DE729797F73000E75BA /* FullScreenCollectionViewCell.swift */,
 				C6658DE529797F73000E75BA /* SwipingController.swift */,
 			);
-			path = "Full Screen";
+			path = Full_Screen;
 			sourceTree = "<group>";
 		};
-		C6658DF2297986FD000E75BA /* Main Screen */ = {
+		C6658DF2297986FD000E75BA /* Main_Screen */ = {
 			isa = PBXGroup;
 			children = (
 				C6658DD129797CB1000E75BA /* MainMenuController.swift */,
 				C6658DD329797CF8000E75BA /* MainMenuCell.swift */,
 				C6658E00297B105C000E75BA /* SideMenu */,
 			);
-			path = "Main Screen";
+			path = Main_Screen;
 			sourceTree = "<group>";
 		};
 		C6658E00297B105C000E75BA /* SideMenu */ = {
@@ -248,10 +248,10 @@
 		C689E2E929C0C99F00E3E4D2 /* Application */ = {
 			isa = PBXGroup;
 			children = (
-				C6658DF2297986FD000E75BA /* Main Screen */,
-				C6629DAE2987FE1D00F68C06 /* Chapters Screen */,
-				C6658DF0297986BC000E75BA /* Grid screen */,
-				C6658DF1297986D9000E75BA /* Full Screen */,
+				C6658DF2297986FD000E75BA /* Main_Screen */,
+				C6629DAE2987FE1D00F68C06 /* Chapters_Screen */,
+				C6658DF0297986BC000E75BA /* Grid_Screen */,
+				C6658DF1297986D9000E75BA /* Full_Screen */,
 			);
 			path = Application;
 			sourceTree = "<group>";
@@ -287,6 +287,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C6658DBC297972D9000E75BA /* Build configuration list for PBXNativeTarget "SPM MANGA" */;
 			buildPhases = (
+				C689E2F229C2164100E3E4D2 /* ShellScript */,
 				C6658DA4297972CF000E75BA /* Sources */,
 				C6658DA5297972CF000E75BA /* Frameworks */,
 				C6658DA6297972CF000E75BA /* Resources */,
@@ -367,6 +368,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		C689E2F229C2164100E3E4D2 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint > /dev/null; then\n    swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C6658DA4297972CF000E75BA /* Sources */ = {

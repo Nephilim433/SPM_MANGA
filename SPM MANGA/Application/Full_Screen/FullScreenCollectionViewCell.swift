@@ -3,15 +3,15 @@ import ImageScrollView
 import FirebaseStorageUI
 import FirebaseStorage
 
-protocol FullScreenCollectionViewCellDelegate:AnyObject {
+protocol FullScreenCollectionViewCellDelegate: AnyObject {
     func didTapFullScreenCell()
 }
 
 class FullScreenCollectionViewCell: UICollectionViewCell {
     static let identifier = "FullScreenCollectionViewCell"
 
-    weak var delegate : FullScreenCollectionViewCellDelegate?
-    let imageScrollView : ImageScrollView = {
+    weak var delegate: FullScreenCollectionViewCellDelegate?
+    let imageScrollView: ImageScrollView = {
         let view = ImageScrollView()
         return view
     }()
@@ -50,7 +50,7 @@ class FullScreenCollectionViewCell: UICollectionViewCell {
         super.prepareForReuse()
         imageScrollView.display(image: UIImage(named: "cover")!)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

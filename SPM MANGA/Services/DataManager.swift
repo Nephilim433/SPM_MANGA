@@ -10,10 +10,10 @@ class DataManager {
     private init() {}
 
     let notificationCenter = NotificationCenter.default
-    
+
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "Mangas")
-        container.loadPersistentStores { storeDescription , error in
+        container.loadPersistentStores { storeDescription, error in
             if let error = error {
                 fatalError("Unresolved error \(error), \(error.localizedDescription)")
             }
@@ -21,7 +21,7 @@ class DataManager {
         }
         return container
     }()
-    //MARK: - CoreData Saving Support
+    // MARK: - CoreData Saving Support
     func save() {
         let contex = persistentContainer.viewContext
         contex.performAndWait {
@@ -37,15 +37,15 @@ class DataManager {
     }
 
     public func saveManga(model: MangaDetailModel) {
-        //TODO: check if manga already exists
-        //it checks if manga already exists and if not, so creates a new one
+        // check if manga already exists
+        // it checks if manga already exists and if not, so creates a new one
         saveMangaToCD(model: model) { manga in
             print("got the manga!")
-            self.saveChapter(for: manga ,with:model.chapters!)
+            self.saveChapter(for: manga, with: model.chapters!)
         }
     }
 
-    public func favoriteManga(with title:String) {
+    public func favoriteManga(with title: String) {
         guard isFavorite(with: title) == false else { return }
 
         let newFav = Favorite(context: persistentContainer.viewContext)
@@ -67,11 +67,11 @@ class DataManager {
 
     }
 
-    public func isFavorite(with title:String) -> Bool {
+    public func isFavorite(with title: String) -> Bool {
 
         let request = Favorite.fetchRequest()
 
-        let predicate = NSPredicate(format: "title = %@" , title)
+        let predicate = NSPredicate(format: "title = %@", title)
 
         request.predicate = predicate
         var isFavorite = false
@@ -90,7 +90,7 @@ class DataManager {
 
     public func getFavoriteMangas() -> [String] {
         let request = Favorite.fetchRequest()
-        var array : [String] = []
+        var array: [String] = []
         do {
             let result = try persistentContainer.viewContext.fetch(request)
             result.forEach { favorite in
@@ -106,15 +106,15 @@ class DataManager {
         return array
     }
 
-    private func saveMangaToCD(model: MangaDetailModel, complition: @escaping (Manga) -> Void ) -> Void {
-        //MARK: - check here if manga already exists
+    private func saveMangaToCD(model: MangaDetailModel, complition: @escaping (Manga) -> Void ) {
+        // MARK: - check here if manga already exists
 
         let result = createOrUpdateManga(title: model.title)
         if let manga = result.1 {
             complition(manga)
             return
         }
-        
+
         let manga = Manga(context: persistentContainer.viewContext)
         let reference = Storage.storage().reference(forURL: model.coverURL)
         manga.title = model.title
@@ -129,8 +129,8 @@ class DataManager {
         manga.translation = model.translation
         manga.volumesCount = Int16(model.volumesCount)
 
-        reference.downloadURL { url, error in
-            SDWebImageDownloader.shared.downloadImage(with: url) { image, data, error, isFinished in
+        reference.downloadURL { url, _ in
+            SDWebImageDownloader.shared.downloadImage(with: url) { image, _, _, isFinished in
                 if isFinished {
                     SDImageCache.shared.store(image, forKey: model.coverURL, toDisk: true) {
                         manga.cover = model.coverURL
@@ -144,18 +144,18 @@ class DataManager {
         }
     }
 
-    private func saveChapter(for manga:Manga, with chapters: [Chapter]) {
+    private func saveChapter(for manga: Manga, with chapters: [Chapter]) {
 
         let group = DispatchGroup()
 
         if manga.chapters?.count == chapters.count {
             print("all chapters already has been saved!")
-            //MARK: - Calling notification center
+            // MARK: - Calling notification center
             self.notificationCenter.post(name: .downloadedAlready, object: nil)
         }
         chapters.forEach { chapter in
             group.enter()
-            if !existsChapter(with: chapter.chapterID){
+            if !existsChapter(with: chapter.chapterID) {
                 let newChapter = ChapterCD(context: persistentContainer.viewContext)
                 newChapter.manga = manga
                 newChapter.chapterID = chapter.chapterID
@@ -202,8 +202,8 @@ class DataManager {
             }
         })
     }
-    //this method we call from swipe gesture
-    public func saveChapterWithCompilation(for model: MangaDetailModel, with chapters: [Chapter], complitation: @escaping (Bool)->Void) {
+    // this method we call from swipe gesture
+    public func saveChapterWithCompilation(for model: MangaDetailModel, with chapters: [Chapter], complitation: @escaping (Bool) -> Void) {
         saveMangaToCD(model: model, complition: { manga in
             chapters.forEach { chapter in
                 let newChapter = ChapterCD(context: self.persistentContainer.viewContext)
@@ -211,7 +211,7 @@ class DataManager {
                 newChapter.chapterID = chapter.chapterID
                 newChapter.chapterName = chapter.chapterName
                 self.savePages(for: newChapter, pages: chapter.pages) { finished in
-                    if finished  {
+                    if finished {
                         self.notificationCenter.post(name: .downloadSuccess, object: nil)
                         complitation(true)
                     }
@@ -237,8 +237,8 @@ class DataManager {
                 } else {
                     let reference = Storage.storage().reference(forURL: mangaPage.url)
 
-                    reference.downloadURL { url, error in
-                        SDWebImageDownloader.shared.downloadImage(with: url) { image, data, error, isFinished in
+                    reference.downloadURL { url, _ in
+                        SDWebImageDownloader.shared.downloadImage(with: url) { image, _, _, isFinished in
                             if isFinished {
                                 pageCount += 1
                                 SDImageCache.shared.store(image, forKey: mangaPage.url, toDisk: true) {
@@ -259,7 +259,6 @@ class DataManager {
         }
     }
 
-    //MARK: - TODO make it to fetch not MANGA objects but MangaDeteilModels
     func fetchMangas() -> [Manga] {
         let request: NSFetchRequest<Manga> = Manga.fetchRequest()
         var fetchedMangas: [Manga] = []
@@ -267,20 +266,18 @@ class DataManager {
             let sort = NSSortDescriptor(key: #keyPath(Manga.title), ascending: false)
             request.sortDescriptors = [sort]
             fetchedMangas = try persistentContainer.viewContext.fetch(request)
-
         } catch let error {
             print("Error fetching singers \(error)")
         }
         return fetchedMangas
     }
 
-    //MARK: - TODO
-    //MARK: - CHANGE IT TO CHECK WITH UUID
+    // MARK: - CHANGE IT TO CHECK WITH UUID
     public func fetchManga(with title: String) -> Manga? {
         let request: NSFetchRequest<Manga> = Manga.fetchRequest()
         request.fetchLimit = 1
         do {
-            let predicate = NSPredicate(format: "title = %@" , title)
+            let predicate = NSPredicate(format: "title = %@", title)
             request.predicate = predicate
             if let fetchedManga = try persistentContainer.viewContext.fetch(request).first {
                 return fetchedManga
@@ -298,7 +295,7 @@ class DataManager {
         let request: NSFetchRequest<ChapterCD> = ChapterCD.fetchRequest()
         request.fetchLimit = 1
         do {
-            let predicate = NSPredicate(format: "chapterID = %@" , id)
+            let predicate = NSPredicate(format: "chapterID = %@", id)
 
             request.predicate = predicate
             if (try persistentContainer.viewContext.fetch(request).first) != nil {
@@ -314,41 +311,42 @@ class DataManager {
 
     public func getSortedChapters(for manga: Manga) -> [ChapterCD] {
         let chapters = manga.chapters?.array as! [ChapterCD]
-        let sorted:[ChapterCD] = chapters.sorted { $0.chapterName?.compare($1.chapterName! , options: .numeric) == .orderedDescending }
+        let sorted: [ChapterCD] = chapters.sorted { $0.chapterName?.compare($1.chapterName!, options: .numeric) == .orderedDescending }
         return sorted
     }
     public func getSortedPages(for chapter: ChapterCD) -> [PageCD] {
         let pages = chapter.pages?.array as! [PageCD]
-        let sorted:[PageCD] = pages.sorted{$0.orderIndex! < $1.orderIndex!}
+        let sorted: [PageCD] = pages.sorted {$0.orderIndex! < $1.orderIndex!}
         return sorted
-
     }
-    public func createOrUpdateManga(title:String) -> (Bool,Manga?) {
+    public func createOrUpdateManga(title: String) -> (Bool, Manga?) {
         let managedContex = persistentContainer.viewContext
         let fetchedRequest = NSFetchRequest<NSManagedObject>(entityName: "Manga")
         fetchedRequest.fetchLimit = 1
         fetchedRequest.predicate = NSPredicate(format: "title == %@", title)
         do {
-            let count = try managedContex.count(for: fetchedRequest)
+//            let count = try managedContex.count(for: fetchedRequest)
             var result = [NSManagedObject]()
             result = try managedContex.fetch(fetchedRequest)
-            if result.count > 0 {
-                var manga: Manga
-                manga = result.first as! Manga
+//            if result.count > 0 {
+            if result.isEmpty, let manga = result.first as? Manga {
+//                var manga: Manga
+//                manga = result.first as! Manga
                 return (true, manga)
             } else {
                 return (false, nil)
             }
         } catch let error as NSError {
             print("could not fetch, \(error) , \(error.localizedDescription)")
-            return (false,nil)
+            return (false, nil)
         }
     }
 
     func delete(manga: Manga) {
-        let chapters = manga.chapters?.array as! [ChapterCD]
+//        let chapters = manga.chapters?.array as! [ChapterCD]
+        guard let chapters = manga.chapters?.array as? [ChapterCD] else { return }
         chapters.forEach({ chapter in
-            let pages = chapter.pages?.array as! [PageCD]
+            guard let pages = chapter.pages?.array as? [PageCD] else { return }
             pages.forEach({ page in
                 SDImageCache.shared.removeImageFromDisk(forKey: page.url)
             })
@@ -379,11 +377,11 @@ class DataManager {
         }
     }
 
-    public func downloadImage(_ url:String, imagee: @escaping (UIImage)-> Void) {
+    public func downloadImage(_ url: String, imagee: @escaping (UIImage) -> Void) {
         let reference = Storage.storage().reference(forURL: url)
-        reference.downloadURL { donwloadUrl, error in
-            SDWebImageDownloader.shared.downloadImage(with: donwloadUrl, options: .highPriority, progress: nil) {
-                image, data, error, isFinished in
+        reference.downloadURL { donwloadUrl, _ in
+            SDWebImageDownloader.shared
+                .downloadImage(with: donwloadUrl, options: .highPriority, progress: nil) { image, _, _, isFinished in
                 if isFinished, let image = image {
                     SDImageCache.shared.store(image, forKey: url, toDisk: true, completion: nil)
                     imagee(image)
@@ -396,19 +394,20 @@ class DataManager {
         guard let url = persistentContainer.persistentStoreDescriptions.first?.url else { return }
         let persistentStoreCoordinator = persistentContainer.persistentStoreCoordinator
         do {
-            try persistentStoreCoordinator.destroyPersistentStore(at:url, ofType: NSSQLiteStoreType, options: nil)
-            try persistentStoreCoordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: url, options: nil)
+            try persistentStoreCoordinator.destroyPersistentStore(at: url, ofType: NSSQLiteStoreType, options: nil)
+            try persistentStoreCoordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil,
+                                                              at: url, options: nil)
         } catch {
             print("Attempted to clear persistent store: " + error.localizedDescription)
         }
     }
 
     private func showAlert(mangaTitle: String) {
-        let alert = UIAlertController(title: "Всі розділи \n\(mangaTitle) \nзавантажені", message: "", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Всі розділи \n\(mangaTitle) \nзавантажені",
+                                      message: "", preferredStyle: .alert)
         UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
         DispatchQueue.main.asyncAfter(deadline: .now()+3) {
             alert.dismiss(animated: true, completion: nil)
         }
     }
 }
-

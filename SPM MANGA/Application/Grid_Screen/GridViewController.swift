@@ -3,7 +3,6 @@ import UIKit
 class GridViewController: UIViewController {
 
     var model: MangaDetailModel?
-    
     var index: Int?
     var cdmodel: Manga?
     var chapters = [Chapter]()
@@ -11,34 +10,34 @@ class GridViewController: UIViewController {
 
     var collectionView: UICollectionView?
 
-    init(model : MangaDetailModel, index: Int) {
+    init(model: MangaDetailModel, index: Int) {
         self.model = model
         chapters = model.chapters!
-        chapters = chapters.sorted { $0.chapterName.compare($1.chapterName , options: .numeric) == .orderedAscending }
+        chapters = chapters.sorted { $0.chapterName.compare($1.chapterName, options: .numeric) == .orderedAscending }
         self.index = index
         super.init(nibName: nil, bundle: nil)
     }
-    init(model : MangaDetailModel) {
+    init(model: MangaDetailModel) {
         self.model = model
         chapters = model.chapters!
-        chapters = chapters.sorted { $0.chapterName.compare($1.chapterName , options: .numeric) == .orderedAscending }
+        chapters = chapters.sorted { $0.chapterName.compare($1.chapterName, options: .numeric) == .orderedAscending }
         super.init(nibName: nil, bundle: nil)
     }
-    init(model : Manga) {
+    init(model: Manga) {
         self.cdmodel = model
         cdchapters = model.chapters?.array as! [ChapterCD]
-        cdchapters = cdchapters.sorted { $0.chapterName?.compare($1.chapterName! , options: .numeric) == .orderedAscending }
+        cdchapters = cdchapters.sorted { $0.chapterName?.compare($1.chapterName!, options: .numeric) == .orderedAscending }
         super.init(nibName: nil, bundle: nil)
     }
-    init(model : Manga, index: Int) {
+    init(model: Manga, index: Int) {
         self.cdmodel = model
         cdchapters = model.chapters?.array as! [ChapterCD]
-        cdchapters = cdchapters.sorted { $0.chapterName?.compare($1.chapterName! , options: .numeric) == .orderedAscending }
+        cdchapters = cdchapters.sorted { $0.chapterName?.compare($1.chapterName!, options: .numeric) == .orderedAscending }
         self.index = index
         super.init(nibName: nil, bundle: nil)
     }
-    init(chapters : [Chapter], title:String, index: Int? = nil) {
-        self.chapters = chapters.sorted { $0.chapterName.compare($1.chapterName , options: .numeric) == .orderedAscending }
+    init(chapters: [Chapter], title: String, index: Int? = nil) {
+        self.chapters = chapters.sorted { $0.chapterName.compare($1.chapterName, options: .numeric) == .orderedAscending }
         self.index = index
         super.init(nibName: nil, bundle: nil)
         self.title = title
@@ -61,7 +60,9 @@ class GridViewController: UIViewController {
 
         collectionView.alwaysBounceVertical = true
         collectionView.backgroundColor = .secondarySystemBackground
-        collectionView.register(GridHeaderCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: GridHeaderCollectionReusableView.identifier)
+        collectionView.register(GridHeaderCollectionReusableView.self,
+                                forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+                                withReuseIdentifier: GridHeaderCollectionReusableView.identifier)
         collectionView.register(GridCollectionViewCell.self, forCellWithReuseIdentifier: GridCollectionViewCell.identifier)
 
         view.addSubview(collectionView)
@@ -95,7 +96,7 @@ class GridViewController: UIViewController {
             index = 0
             return
         }
-        
+
         let indexPath = IndexPath(item: 0, section: index)
         DispatchQueue.main.async {
             if let attributes = self.collectionView?.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, at: indexPath) {
@@ -115,22 +116,24 @@ class GridViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 }
-extension GridViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource,UICollectionViewDelegate {
+extension GridViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UICollectionViewDelegate {
 
-    func collectionView(_ collectionView: UICollectionView,didSelectItemAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
 
-        let vc = SwipingController(chapters: chapters, indexPath: indexPath)
-        vc.callback = { section in
+        let swipingVC = SwipingController(chapters: chapters, indexPath: indexPath)
+        swipingVC.callback = { section in
             self.index = section
         }
-        self.navigationController?.pushViewController(vc, animated: true)
+        self.navigationController?.pushViewController(swipingVC, animated: true)
     }
 
-    //MARK: - Collection View Header Stuff
+    // MARK: - Collection View Header Stuff
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let section = chapters[indexPath.section]
-        guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: GridHeaderCollectionReusableView.identifier, for: indexPath) as? GridHeaderCollectionReusableView  else { return UICollectionReusableView() }
+        guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: GridHeaderCollectionReusableView.identifier, for: indexPath) as? GridHeaderCollectionReusableView  else {
+            return UICollectionReusableView()
+        }
         sectionHeader.configure(chapterName: section.chapterName)
         return sectionHeader
     }
@@ -143,11 +146,11 @@ extension GridViewController: UICollectionViewDelegateFlowLayout, UICollectionVi
         return chapters.count
     }
 
-    //MARK: - Collection View CELL stuff
+    // MARK: - Collection View CELL stuff
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let url = chapters[indexPath.section].pages[indexPath.item].url
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GridCollectionViewCell.identifier, for: indexPath) as? GridCollectionViewCell else { return UICollectionViewCell() }
-
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GridCollectionViewCell.identifier, for: indexPath) as? GridCollectionViewCell else { return UICollectionViewCell()
+        }
         cell.configure(url: url, pos: indexPath.item+1, max: chapters[indexPath.section].pages.count)
         return cell
     }

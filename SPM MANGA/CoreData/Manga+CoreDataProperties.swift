@@ -9,7 +9,6 @@
 import Foundation
 import CoreData
 
-
 extension Manga {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Manga> {
@@ -68,6 +67,6 @@ extension Manga {
 
 }
 
-extension Manga : Identifiable {
+extension Manga: Identifiable {
 
 }

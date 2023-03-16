@@ -9,7 +9,6 @@
 import Foundation
 import CoreData
 
-
 extension ChapterCD {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<ChapterCD> {
@@ -58,6 +57,6 @@ extension ChapterCD {
 
 }
 
-extension ChapterCD : Identifiable {
+extension ChapterCD: Identifiable {
 
 }

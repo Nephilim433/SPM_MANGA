@@ -6,7 +6,6 @@ class GridHeaderCollectionReusableView: UICollectionReusableView {
     private let chapterNameLabel: UILabel = {
         let label = UILabel()
         label.text = "🍣"
-
         label.font = .systemFont(ofSize: 16, weight: .semibold)
         label.textColor = .label
         return label

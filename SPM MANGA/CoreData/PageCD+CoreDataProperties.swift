@@ -9,7 +9,6 @@
 import Foundation
 import CoreData
 
-
 extension PageCD {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<PageCD> {
@@ -22,6 +21,6 @@ extension PageCD {
 
 }
 
-extension PageCD : Identifiable {
+extension PageCD: Identifiable {
 
 }

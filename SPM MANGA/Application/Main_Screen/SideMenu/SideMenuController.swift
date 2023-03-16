@@ -1,7 +1,7 @@
 import UIKit
 import SideMenu
 
-protocol SideMenuControllerDelegate {
+protocol SideMenuControllerDelegate: AnyObject {
     func didSelectMenu(item: SideMenuItem)
 }
 
@@ -28,7 +28,7 @@ enum SideMenuItem: String, CaseIterable {
 class SideMenuController: UITableViewController {
 
     private let menuItems: [SideMenuItem]
-    var delegate: SideMenuControllerDelegate?
+    weak var delegate: SideMenuControllerDelegate?
 
     init(with menuItems: [SideMenuItem]) {
         self.menuItems = menuItems
@@ -38,9 +38,9 @@ class SideMenuController: UITableViewController {
 
     @objc func openSettings() {
         print("opening settings")
-        let vc = SettingsViewController()
-        vc.modalPresentationStyle = .formSheet
-        self.present(vc, animated: true, completion: nil)
+        let settingsVC = SettingsViewController()
+        settingsVC.modalPresentationStyle = .formSheet
+        self.present(settingsVC, animated: true, completion: nil)
 
     }
     required init?(coder: NSCoder) {
@@ -51,7 +51,6 @@ class SideMenuController: UITableViewController {
         super.viewDidLoad()
         view.backgroundColor = .secondarySystemBackground
         tableView.isScrollEnabled = false
-        
         let gearButton = UIBarButtonItem(image: UIImage(systemName: "gearshape"), style: .plain, target: self, action: #selector(openSettings))
         gearButton.tintColor = .label
         navigationItem.rightBarButtonItem = gearButton
@@ -60,7 +59,7 @@ class SideMenuController: UITableViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
     }
-    
+
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let selectedItem = menuItems[indexPath.row]

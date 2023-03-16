@@ -24,13 +24,13 @@ struct MangaDetailModel {
 
     let isTranslated: Bool
     let isFinished: Bool
-    
+
 }
 
 struct Chapter {
     let chapterName: String
     let chapterID: String
-    let pages : [MangaPage]
+    let pages: [MangaPage]
 }
 
 struct MangaPage {

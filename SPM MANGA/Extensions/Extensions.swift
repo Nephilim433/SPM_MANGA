@@ -21,24 +21,23 @@ extension UIView {
     }
 }
 
-
 enum HexColor: String {
     case pinkishColor = "#FA6B77"
     case customGray = "324148"
 }
 class ColorHex {
-static func hexStringToUIColor (hex:String) -> UIColor {
-    var cString:String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+static func hexStringToUIColor (hex: String) -> UIColor {
+    var cString: String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
 
-    if (cString.hasPrefix("#")) {
+    if cString.hasPrefix("#") {
         cString.remove(at: cString.startIndex)
     }
 
-    if ((cString.count) != 6) {
+    if (cString.count) != 6 {
         return UIColor.gray
     }
 
-    var rgbValue:UInt64 = 0
+    var rgbValue: UInt64 = 0
     Scanner(string: cString).scanHexInt64(&rgbValue)
 
     return UIColor(
@@ -52,7 +51,7 @@ static func hexStringToUIColor (hex:String) -> UIColor {
 
 class DynamicLableSize {
 
-    static func heightForZeroLines(text: String?,font: UIFont, width: CGFloat) -> CGFloat {
+    static func heightForZeroLines(text: String?, font: UIFont, width: CGFloat) -> CGFloat {
         var currentHeight: CGFloat!
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: CGFloat.greatestFiniteMagnitude))
         label.text = text
@@ -67,7 +66,6 @@ class DynamicLableSize {
         return currentHeight
     }
 }
-
 
 extension UIColor {
     public static var myPink: UIColor {

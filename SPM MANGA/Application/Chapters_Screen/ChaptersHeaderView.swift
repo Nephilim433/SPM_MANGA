@@ -3,7 +3,7 @@ import FirebaseStorageUI
 import FirebaseStorage
 import SnapKit
 
-protocol ChaptersHeaderViewDelegate:AnyObject {
+protocol ChaptersHeaderViewDelegate: AnyObject {
     func didTapToggleHeaderViewHeight()
     func favoriteThisManga()
     func unfavoriteThisManga()
@@ -11,15 +11,13 @@ protocol ChaptersHeaderViewDelegate:AnyObject {
     func readThisManga()
 }
 
-
 class ChaptersHeaderView: UITableViewHeaderFooterView {
     static let identifier = "ChaptersHeaderView"
     static let buttonSize = 30
 
-
     weak var delegate: ChaptersHeaderViewDelegate?
     var isFavorite = false
-    let titleLabel : UILabel = {
+    let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .boldSystemFont(ofSize: 18)
         label.numberOfLines = 2
@@ -79,20 +77,20 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
         return text
     }()
 
-    var thumbnailImageView : UIImageView = {
+    var thumbnailImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
 
-    let favoriteButton: UIButton = {
+    lazy var favoriteButton: UIButton = {
         let button = UIButton()
         button.tintColor = ColorHex.hexStringToUIColor(hex: HexColor.pinkishColor.rawValue)
         button.addTarget(self, action: #selector(toggleFavoriteButton), for: .touchUpInside)
         return button
     }()
-    let downloadAllButton: UIButton = {
+    lazy var downloadAllButton: UIButton = {
         let button = UIButton()
         button.tintColor = .label
         let config = UIImage.SymbolConfiguration(pointSize: 27)
@@ -102,7 +100,7 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
         button.addTarget(self, action: #selector(downloadButtonPressed), for: .touchUpInside)
         return button
     }()
-    let startToReadButton: UIButton = {
+    lazy var startToReadButton: UIButton = {
         let button = UIButton()
         button.tintColor = .label
         let config = UIImage.SymbolConfiguration(pointSize: 27)
@@ -111,7 +109,7 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
         return button
     }()
 
-    var favoriteImage : UIImage {
+    var favoriteImage: UIImage {
         let config = UIImage.SymbolConfiguration(pointSize: 30)
         let image = UIImage(systemName: "heart" + (isFavorite ? ".fill" : ""), withConfiguration: config)!
         return image
@@ -124,7 +122,6 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
         view.clipsToBounds = true
         return view
     }()
-
 
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
@@ -151,7 +148,6 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
         setupConstraints()
     }
 
-
     @objc func toggleFavoriteButton() {
         favoriteButton.pressAnimation()
         if isFavorite {
@@ -167,18 +163,15 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
         delegate?.didTapToggleHeaderViewHeight()
     }
 
-
     @objc func downloadButtonPressed() {
         downloadAllButton.pressAnimation()
         delegate?.downloadThisManga()
     }
 
-
     @objc func startToReadButtonPressed() {
         startToReadButton.pressAnimation()
         delegate?.readThisManga()
     }
-
 
     private func setupConstraints() {
         thumbnailImageView.snp.makeConstraints { make in
@@ -186,52 +179,48 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
             make.height.equalTo(150)
             make.left.top.equalToSuperview().offset(10)
         }
-
         titleLabel.snp.makeConstraints { make in
             make.left.equalTo(thumbnailImageView.snp.right).offset(10)
             make.top.equalToSuperview().offset(10)
             make.right.equalToSuperview().offset(-10)
         }
-        ///putting labels from down to top, constaining it to bottom of imageview
-
-        //(translationLabel)
+        // putting labels from down to top, constaining it to bottom of imageview
+        // (translationLabel)
         translationLabel.snp.makeConstraints { make in
             make.bottom.equalTo(thumbnailImageView.snp.bottom)
             make.right.equalToSuperview().offset(-10)
             make.left.equalTo(thumbnailImageView.snp.right).offset(10)
         }
-        //(authorLabel)
+        // (authorLabel)
         authorLabel.snp.makeConstraints { make in
             make.bottom.equalTo(translationLabel.snp.top).offset(-5)
             make.right.equalToSuperview().offset(-10)
             make.left.equalTo(thumbnailImageView.snp.right).offset(10)
         }
-        //(chaptersLabel)
+        // (chaptersLabel)
         chaptersLabel.snp.makeConstraints { make in
             make.bottom.equalTo(authorLabel.snp.top).offset(-5)
             make.right.equalToSuperview().offset(-10)
             make.left.equalTo(thumbnailImageView.snp.right).offset(10)
         }
-        //(volumesLabel)
+        // (volumesLabel)
         volumesLabel.snp.makeConstraints { make in
             make.bottom.equalTo(chaptersLabel.snp.top).offset(-5)
             make.right.equalToSuperview().offset(-10)
             make.left.equalTo(thumbnailImageView.snp.right).offset(10)
         }
-        //(releaseYear)
+        // (releaseYear)
         releaseYear.snp.makeConstraints { make in
             make.bottom.equalTo(volumesLabel.snp.top).offset(-5)
             make.right.equalToSuperview().offset(-10)
             make.left.equalTo(thumbnailImageView.snp.right).offset(10)
         }
-
-        ///butttons
+        // butttons
         downloadAllButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.height.equalTo(ChaptersHeaderView.buttonSize)
             make.width.equalTo(ChaptersHeaderView.buttonSize*2)
             make.bottom.equalToSuperview().offset(-10)
-
         }
         favoriteButton.snp.makeConstraints { make in
             make.left.equalTo(downloadAllButton.snp.right)
@@ -245,21 +234,20 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
             make.width.equalTo(ChaptersHeaderView.buttonSize*2)
             make.bottom.equalTo(downloadAllButton.snp.bottom)
         }
-        //(genrasLabel)
+        // (genrasLabel)
         genrasLabel.snp.makeConstraints { make in
             make.top.equalTo(thumbnailImageView.snp.bottom).offset(10)
             make.left.equalToSuperview().offset(10)
             make.right.equalToSuperview().offset(-10)
-
         }
-        //description
+        // description
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalTo(genrasLabel.snp.bottom).offset(10)
             make.left.equalToSuperview().offset(10)
             make.right.equalToSuperview().offset(-10)
             make.bottom.equalTo(downloadAllButton.snp.top).offset(-10)
         }
-        //grayview
+        // grayview
         grayView.snp.makeConstraints { make in
             make.left.top.equalTo(startToReadButton).offset(-5)
             make.right.bottom.equalTo(favoriteButton).offset(5)
@@ -273,7 +261,7 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
     public func configure(with model: MangaDetailModel) {
 
         if SDImageCache.shared.diskImageDataExists(withKey: model.coverURL) {
-            SDImageCache.shared.queryImage(forKey: model.coverURL, options: .continueInBackground, context: nil, cacheType: .disk) { image, data, cacheType  in
+            SDImageCache.shared.queryImage(forKey: model.coverURL, options: .continueInBackground, context: nil, cacheType: .disk) { image, _, _  in
                 self.thumbnailImageView.image = image
             }
         } else {
@@ -299,27 +287,26 @@ class ChaptersHeaderView: UITableViewHeaderFooterView {
 
 }
 
-
 extension UIButton {
 
     func pressAnimation() {
 
-        let expandTransform:CGAffineTransform = CGAffineTransform(scaleX: 1.15, y: 1.15);
+        let expandTransform: CGAffineTransform = CGAffineTransform(scaleX: 1.15, y: 1.15)
         UIView.transition(with: self,
-                          duration:0.1,
+                          duration: 0.1,
                           options: UIView.AnimationOptions.transitionCrossDissolve,
                           animations: {
             self.transform = expandTransform
         },
-                          completion: {(finished: Bool) in
+                          completion: {(_: Bool) in
             UIView.animate(withDuration: 0.4,
-                           delay:0.0,
-                           usingSpringWithDamping:0.40,
-                           initialSpringVelocity:0.2,
-                           options:UIView.AnimationOptions.curveEaseOut,
+                           delay: 0.0,
+                           usingSpringWithDamping: 0.40,
+                           initialSpringVelocity: 0.2,
+                           options: UIView.AnimationOptions.curveEaseOut,
                            animations: {
                 self.transform = .identity
-            }, completion:nil)
+            }, completion: nil)
         })
     }
 }

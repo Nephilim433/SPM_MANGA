@@ -6,7 +6,7 @@ class GridCollectionViewCell: UICollectionViewCell {
     static let identifier = "GridCollectionViewCell"
     let imageView = UIImageView()
 
-    let posLabel : UILabel = {
+    let posLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 10)
         return label
@@ -18,7 +18,6 @@ class GridCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(posLabel)
         setupImageView()
         imageView.sd_imageIndicator = SDWebImageActivityIndicator.gray
-
     }
 
     override func prepareForReuse() {
@@ -30,18 +29,17 @@ class GridCollectionViewCell: UICollectionViewCell {
     }
 
     private func setupImageView() {
-
         imageView.contentMode = .scaleAspectFit
         contentView.clipsToBounds = true
         posLabel.frame = CGRect(x: frame.width/2-8, y: frame.height-10, width: frame.width, height: 10)
         imageView.frame = CGRect(x: 0, y: 2, width: contentView.width, height: contentView.height-14)
     }
 
-    public func configure(url: String, pos:Int, max:Int) {
+    public func configure(url: String, pos: Int, max: Int) {
         posLabel.text = "\(pos)/\(max)"
         if SDImageCache.shared.diskImageDataExists(withKey: url) {
             print("getting image from cache")
-            SDImageCache.shared.queryImage(forKey: url, options: .highPriority, context: nil, cacheType: .disk) { image, data, cacheType in
+            SDImageCache.shared.queryImage(forKey: url, options: .highPriority, context: nil, cacheType: .disk) { image, _, _ in
                 self.imageView.sd_imageIndicator = nil
                 self.imageView.image = image
             }
@@ -53,9 +51,9 @@ class GridCollectionViewCell: UICollectionViewCell {
         }
     }
 
-    public func configure(key: String, pos:Int, max:Int) {
+    public func configure(key: String, pos: Int, max: Int) {
         posLabel.text = "\(pos)/\(max)"
-        SDImageCache.shared.queryImage(forKey: key, options: .continueInBackground, context: nil, cacheType: .disk) { image, data, cacheType  in
+        SDImageCache.shared.queryImage(forKey: key, options: .continueInBackground, context: nil, cacheType: .disk) { image, _, _  in
             self.imageView.image = image
         }
     }

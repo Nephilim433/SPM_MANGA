@@ -9,13 +9,12 @@ class ChaptersListTableViewCell: UITableViewCell {
             isDownloading ? spinner.startAnimating() : spinner.stopAnimating()
         }
     }
-    let spinner : UIActivityIndicatorView = {
+    let spinner: UIActivityIndicatorView = {
         let spinner = UIActivityIndicatorView()
         spinner.isHidden = false
         spinner.hidesWhenStopped = true
         return spinner
     }()
-
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
